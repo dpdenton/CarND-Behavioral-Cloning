@@ -5,6 +5,8 @@ import cv2
 
 import sklearn
 
+SAVED_MODELS_DIR = 'saved_models'
+
 def _get_image(track_data, source_path):
 
     filename = ntpath.basename(source_path)
@@ -32,7 +34,7 @@ def get_data(samples, flip=True, use_all=True):
         # use left and right camera images
         if use_all:
             # create adjusted steering measurements for the side camera images
-            correction = 0.1  # this is a parameter to tune
+            correction = 0.2  # this is a parameter to tune
             measurement_left = measurement + correction
             measurement_right = measurement - correction
 
@@ -131,16 +133,6 @@ if __name__ == "__main__":
     from keras.models import Sequential
     from keras.layers import Flatten, Dense, Lambda, Conv2D, MaxPooling2D, Dropout, Activation, Cropping2D
 
-    from drive import load_model
-
-    k_model = load_model('model.h5')
-
-    k_model.summary()
-
-    sys.exit()
-
-    SAVED_MODELS_DIR = 'saved_models'
-
     parser = argparse.ArgumentParser(description='Remote Driving Model')
 
     parser.add_argument(
@@ -165,6 +157,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    # set sample and model data from args
     model_name = args.model_name
     model_path = "{}/{}".format(SAVED_MODELS_DIR, model_name)
     training_data_labels = args.data.split(',')
@@ -172,6 +165,7 @@ if __name__ == "__main__":
     nb_samples = len(samples)
     nb_epochs = args.epochs
 
+    # get training data
     X_train, y_train = get_data(samples)
 
     # # separate data
@@ -181,19 +175,20 @@ if __name__ == "__main__":
     # train_generator = generator(train_samples, batch_size=32, flip=False, use_all=False)
     # validation_generator = generator(validation_samples, batch_size=32, flip=False, use_all=False)
 
+    # build model
     model = Sequential()
     # pre-processing layer
     model.add(Lambda(lambda x: (x / 255.0) - 0.5, input_shape=(160, 320, 3)))
     model.add(Cropping2D(cropping=((60, 20), (0, 0)), input_shape=(160, 320, 3)))
-
     # convolution
     model.add(Conv2D(6, 5, 5, activation="relu"))
     model.add(MaxPooling2D())
-
     model.add(Activation('relu'))
+    # flatten
     model.add(Flatten())
     model.add(Dense(1))
 
+    # compile and run
     model.compile(loss="mse", optimizer="adam")
     # history = model.fit_generator(
     #     generator=train_generator,
@@ -211,9 +206,9 @@ if __name__ == "__main__":
     plt.ylabel('mean squared error loss')
     plt.xlabel('epoch')
     plt.legend(['training set', 'validation set'], loc='upper right')
+    plt.gca().set_position((.1, .3, .8, .6))
 
-    plt.gca().set_position((.1, .3, .8, .6))  # to make a bit of room for extra text
-
+    # add summary of hyperparameters and loss
     plt.figtext(.02, .02,
         "Train Loss: {train_loss}\n"
         "Valid Loss: {valid_loss}\n"
