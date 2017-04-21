@@ -116,17 +116,17 @@ At the end of the process, the vehicle is able to drive autonomously around the 
 The final model architecture (model.py lines 184-195) consisted of a convolution neural network with the following layers and layer sizes:
 
 
-| Layer (type)                   | Output Shape        | Param # |   |   |
-|--------------------------------|---------------------|---------|---|---|
-| lambda_1 (Lambda)              | (None, 160, 320, 3) | 0       |   |   |
-| cropping2d_1 (Cropping2D)      | (None, 80, 320, 3)  | 0       |   |   |
-| conv2d_1 (Conv2D)              | (None, 76, 316, 6)  | 456     |   |   |
-| max_pooling2d_1 (MaxPooling2D) | (None, 38, 158, 6)  | 0       |   |   |
-| activation_1 (Activation)      | (None, 38, 158, 6)  | 0       |   |   |
-| flatten_1 (Flatten)            | (None, 36024)       | 0       |   |   |
-| dense_1 (Dense)                | (None, 1)           | 36025   |   |   |
+| Layer (type)                   | Output Shape        | Param # |
+|--------------------------------|---------------------|---------|
+| lambda_1 (Lambda)              | (None, 160, 320, 3) | 0       |
+| cropping2d_1 (Cropping2D)      | (None, 80, 320, 3)  | 0       |
+| conv2d_1 (Conv2D)              | (None, 76, 316, 6)  | 456     |
+| max_pooling2d_1 (MaxPooling2D) | (None, 38, 158, 6)  | 0       |
+| activation_1 (Activation)      | (None, 38, 158, 6)  | 0       |
+| flatten_1 (Flatten)            | (None, 36024)       | 0       |
+| dense_1 (Dense)                | (None, 1)           | 36025   |
 
-Total params: 36,481.0
+Total params: 36,481
 
 ####3. Creation of the Training Set & Training Process
 
